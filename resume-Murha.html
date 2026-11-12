@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Резюме бізнес-плану · версія 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f2ea;
+  --card:#ffffff;
+  --ink:#141318;
+  --mute:#6d6a73;
+  --line:rgba(20,19,24,.12);
+  --cobalt:#2d4bff;
+  --cobalt-d:#1f37d6;
+  --coral:#ff5b3a;
+  --hi:#ffe24a;
+  --mint:#14b87a;
+  --display:'Unbounded','Arial Black',system-ui,sans-serif;
+  --body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --stage:31vw;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- background ---------- */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg .dots{position:absolute;inset:0;background-image:radial-gradient(rgba(20,19,24,.13) 1.2px,transparent 1.2px);background-size:26px 26px;mask-image:linear-gradient(120deg,transparent 10%,#000 60%)}
+.bg .blob{position:absolute;border-radius:50%;filter:blur(80px);transition:transform 1.6s cubic-bezier(.2,.8,.2,1)}
+.bg .b1{width:46vmax;height:46vmax;background:#c9d2ff;opacity:.7;top:-18vmax;right:-12vmax}
+.bg .b2{width:38vmax;height:38vmax;background:#ffd6c9;opacity:.65;bottom:-20vmax;left:22vw}
+
+/* ---------- stage / character ---------- */
+.stage{position:fixed;left:0;top:0;bottom:0;width:var(--stage);z-index:5;display:flex;align-items:flex-end;justify-content:center;overflow:visible}
+.spot{position:absolute;left:50%;bottom:9vh;width:min(27vw,62vh);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:var(--cobalt);transition:background .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.spot::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:2px dashed rgba(45,75,255,.35);animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stage.excited .spot{transform:translateX(-50%) scale(1.06);background:var(--coral)}
+.stage.excited .spot::after{border-color:rgba(255,91,58,.4)}
+#char{position:relative;height:84vh;width:auto;overflow:visible;margin-bottom:-1px;filter:drop-shadow(0 30px 40px rgba(20,19,24,.12))}
+.nameplate{position:absolute;left:50%;bottom:3.4vh;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:100px;padding:9px 18px 9px 12px;display:flex;align-items:center;gap:10px;white-space:nowrap;z-index:3;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.nameplate .live{width:9px;height:9px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 0 rgba(255,91,58,.6);animation:live 1.6s infinite}
+@keyframes live{70%{box-shadow:0 0 0 10px rgba(255,91,58,0)}100%{box-shadow:0 0 0 0 rgba(255,91,58,0)}}
+.nameplate b{font-family:var(--display);font-weight:800;font-size:clamp(12px,1vw,15px);letter-spacing:.04em}
+.nameplate span{font-size:clamp(11px,.85vw,13px);color:#bdbac4}
+
+/* character parts */
+#body{animation:breath 4.2s ease-in-out infinite;transform-origin:200px 640px}
+@keyframes breath{50%{transform:translateY(-4px) scaleY(1.006)}}
+#head{transform-origin:200px 320px;animation:idlehead 7s ease-in-out infinite;transition:transform .5s}
+@keyframes idlehead{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(2deg)}}
+.talking #head{animation:talkhead .9s ease-in-out infinite alternate}
+@keyframes talkhead{0%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(1deg) translateY(2px)}100%{transform:rotate(2.5deg) translateY(-1px)}}
+#eyes{transform-origin:200px 214px;transition:transform .08s}
+#eyes.blink{transform:scaleY(.08)}
+#brows{transition:transform .3s}
+.g-wow #brows{transform:translateY(-7px)}
+#armR,#armL{transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
+#armR{transform-origin:262px 392px}
+#armL{transform-origin:138px 392px}
+.g-point #armR{transform:rotate(-104deg)}
+.g-wave #armR{transform:rotate(-150deg);animation:wave .5s ease-in-out 4 alternate .4s}
+@keyframes wave{to{transform:rotate(-128deg)}}
+.g-open #armR{transform:rotate(-38deg)}
+.g-open #armL{transform:rotate(38deg)}
+.g-think #armL{transform:rotate(-8deg)}
+.g-think #head{transform:rotate(-6deg)!important;animation:none}
+#finger{opacity:0;transition:opacity .3s}
+.g-point #finger,.g-wave #finger{opacity:1}
+
+/* ---------- deck ---------- */
+.deck{position:fixed;left:var(--stage);right:0;top:0;bottom:0;z-index:2}
+.slide{position:absolute;inset:0;padding:8vh 4vw 21vh 5.5vw;display:flex;flex-direction:column;justify-content:center;opacity:0;pointer-events:none;transform:translateY(4vh);transition:opacity .6s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
+.slide.past{transform:translateY(-4vh)}
+.slide.active{opacity:1;pointer-events:auto;transform:none}
+
+.kicker{font-family:var(--display);font-weight:600;font-size:clamp(10px,.9vw,14px);letter-spacing:.2em;text-transform:uppercase;color:var(--cobalt);display:flex;align-items:center;gap:12px;margin-bottom:2.6vh}
+.kicker::before{content:"";width:34px;height:2px;background:currentColor}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.025em;line-height:1}
+h1{font-size:clamp(40px,5.8vw,104px)}
+h2{font-size:clamp(26px,3.3vw,58px);margin-bottom:3.4vh}
+h3{font-size:clamp(15px,1.35vw,23px);font-weight:700;line-height:1.15}
+p{font-size:clamp(14px,1.3vw,22px);line-height:1.4}
+.mute{color:var(--mute)}
+.cobalt{color:var(--cobalt)}
+.coral{color:var(--coral)}
+.mark{background:linear-gradient(transparent 55%,var(--hi) 55%);padding:0 .1em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.src{position:absolute;left:5.5vw;right:4vw;bottom:16.5vh;font-size:clamp(10px,.78vw,12px);color:var(--mute)}
+.src b{color:var(--ink)}
+
+/* fragments */
+.f{opacity:0;transform:translateY(22px);filter:blur(5px);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .65s cubic-bezier(.2,.8,.2,1),filter .55s}
+.f.on{opacity:1;transform:none;filter:none}
+.f.pop{transform:scale(.6)}
+.f.pop.on{transform:none}
+
+/* ---------- 1 title ---------- */
+.title h1 span{display:block}
+.title h1 .ver{display:inline-block;font-size:.32em;vertical-align:top;background:var(--cobalt);color:#fff;border-radius:12px;padding:.3em .55em;margin-top:.4em;letter-spacing:.02em;transform:rotate(-3deg)}
+.title .sub{font-family:var(--display);font-weight:400;font-size:clamp(17px,2vw,34px);line-height:1.3;margin-top:3.4vh;color:var(--mute);max-width:52vw}
+.title .sub em{font-style:normal;color:var(--ink);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4.5vh}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:100px;padding:7px 14px;font-size:clamp(11px,.9vw,14px);font-weight:600}
+.chip i{font-style:normal;color:var(--cobalt)}
+
+/* ---------- 2 big number ---------- */
+.hero-num{display:grid;grid-template-columns:auto 1fr;gap:3vw;align-items:center}
+.watch{position:relative;width:min(19vw,40vh);aspect-ratio:1;filter:drop-shadow(0 24px 40px rgba(45,75,255,.22))}
+.watch svg{width:100%;height:100%;overflow:visible}
+.warc{transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)}
+.hero-num.on .warc{stroke-dashoffset:0}
+.wc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.wc b{font-family:var(--display);font-weight:900;font-size:min(7vw,15vh);line-height:.9;letter-spacing:-.05em;color:var(--cobalt)}
+.wc span{font-family:var(--display);font-weight:600;font-size:min(1.2vw,2.4vh);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:.6vh}
+.hero-side{min-width:0}
+.hero-lead{font-family:var(--display);font-weight:700;font-size:clamp(17px,1.75vw,30px)!important;line-height:1.2!important}
+.hero-side .stats{margin-top:2.4vh}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,17vw,300px);line-height:.8;letter-spacing:-.06em;color:var(--cobalt)}
+.big sup{font-size:.2em;letter-spacing:0;vertical-align:top;position:relative;top:.4em;margin-left:.15em;color:var(--ink)}
+.hero-cap{max-width:24vw;padding-bottom:1.4vh}
+.hero-cap p{font-weight:700}
+.stats{display:flex;gap:1.4vw;margin-top:4vh}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:2.2vh 1.6vw;flex:1;box-shadow:0 14px 34px -22px rgba(20,19,24,.35)}
+.stat b{display:block;font-family:var(--display);font-weight:900;font-size:clamp(28px,3.4vw,58px);line-height:1;letter-spacing:-.03em}
+.stat span{display:block;margin-top:1vh;font-size:clamp(12px,1.05vw,17px);color:var(--mute);line-height:1.3}
+.stat.hot b{color:var(--coral)}
+.stat b span{display:inline;margin:0;font-size:inherit;color:inherit;line-height:inherit}
+.punch{margin-top:3.4vh;font-family:var(--display);font-weight:600;font-size:clamp(16px,1.75vw,29px);line-height:1.25}
+
+/* ---------- 3 AI ---------- */
+.ai-top{display:flex;gap:3vw;align-items:center}
+.ai-top .big{font-size:clamp(80px,10vw,170px)}
+.ai-top p{max-width:26vw;font-weight:700}
+.stackbar{margin-top:3.2vh;display:flex;height:clamp(40px,5.4vh,56px);border-radius:14px;overflow:hidden;background:#e7e3d8}
+.stackbar div{display:flex;align-items:center;padding:0 14px;font-weight:800;font-size:clamp(11px,.95vw,15px);color:#fff;white-space:nowrap;overflow:hidden;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.on .stackbar div{width:var(--w)}
+.stackbar .s1{background:var(--cobalt)}
+.stackbar .s2{background:#7b8cff}
+.stackbar .s3{background:#b9b4a6;color:var(--ink)}
+.legend{display:flex;gap:1.6vw;margin-top:1.2vh;font-size:clamp(11px,.9vw,14px);color:var(--mute)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:1.4vw;margin-top:3.2vh}
+.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:2.4vh 1.6vw}
+.box h3{margin-bottom:1.2vh;display:flex;gap:10px;align-items:center}
+.box ul{list-style:none}
+.box li{font-size:clamp(12px,1.05vw,17px);line-height:1.35;padding-left:1.2em;position:relative;margin-top:.6vh}
+.box li::before{content:"→";position:absolute;left:0;color:var(--cobalt);font-weight:800}
+.box.warn{background:#fff1ec;border-color:rgba(255,91,58,.35)}
+.box.warn li::before{content:"✕";color:var(--coral)}
+
+/* ---------- 4 sequel ---------- */
+.dataset{display:inline-flex;gap:10px;flex-wrap:wrap;margin:-1.4vh 0 3vh}
+.dataset span{font-family:var(--display);font-weight:600;font-size:clamp(11px,.9vw,14px);background:var(--ink);color:#fff;border-radius:8px;padding:6px 12px}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:1.4vh 1.2vw}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:2vh 1.4vw;display:flex;align-items:center;gap:1.4vw;box-shadow:0 16px 40px -26px rgba(20,19,24,.4);position:relative;min-width:0}
+.qcard b{flex:none;width:clamp(96px,9vw,160px);font-family:var(--display);font-weight:900;font-size:clamp(28px,3.2vw,54px);line-height:1;letter-spacing:-.04em;color:var(--cobalt);white-space:nowrap}
+.qcard p{font-size:clamp(12px,1.08vw,18px);line-height:1.3;min-width:0}
+.term{background:linear-gradient(transparent 60%,var(--hi) 60%);font-weight:700}
+.glossary{margin-top:2vh;display:flex;flex-wrap:wrap;gap:8px}
+.glossary span{background:var(--card);border:1px dashed rgba(45,75,255,.5);border-radius:10px;padding:6px 12px;font-size:clamp(11px,.9vw,14px)}
+.glossary b{color:var(--cobalt)}
+.gloss{margin-top:1vh;font-weight:500!important;font-size:clamp(11px,.92vw,15px)!important;color:var(--mute)}
+.gloss b{color:var(--ink)}
+.qcard small{display:block;color:var(--mute);margin-top:.6vh;font-size:clamp(10px,.8vw,13px)}
+.qcard.lol{background:var(--hi);border-color:transparent}
+.qcard.lol b{color:var(--ink)}
+.qcard.lol::after{content:"🤦";position:absolute;right:12px;top:8px;font-size:clamp(16px,1.6vw,26px)}
+
+/* ---------- 5 one sentence ---------- */
+.formula{font-family:var(--display);font-weight:600;font-size:clamp(15px,1.6vw,27px);line-height:1.7;margin-bottom:3.4vh}
+.formula i{font-style:normal;background:var(--card);border:1.5px dashed var(--cobalt);color:var(--cobalt);border-radius:8px;padding:.05em .35em;margin:0 .08em;white-space:nowrap}
+.vs{position:relative;border-radius:20px;background:var(--card);border:1px solid var(--line);padding:3.4vh 2.2vw;min-height:22vh;overflow:hidden;box-shadow:0 16px 40px -26px rgba(20,19,24,.4)}
+.vs .lab{font-family:var(--display);font-size:clamp(10px,.85vw,13px);letter-spacing:.16em;text-transform:uppercase;font-weight:800;margin-bottom:1.6vh}
+.vs .txt{font-size:clamp(16px,1.65vw,28px);line-height:1.35;font-weight:600}
+.vs .face{transition:opacity .45s,transform .55s cubic-bezier(.2,.8,.2,1)}
+.vs{display:grid}.vs .face{grid-area:1/1}
+.vs .good{opacity:0;transform:translateY(26px)}
+.vs.flip .bad{opacity:0;transform:translateY(-26px)}
+.vs.flip .good{opacity:1;transform:none}
+.vs.flip{background:#eef1ff;border-color:rgba(45,75,255,.35)}
+.vs .bad .lab{color:var(--coral)}
+.vs .good .lab{color:var(--cobalt)}
+.vs .bad .txt{color:var(--mute)}
+.buzz{text-decoration:line-through;text-decoration-color:var(--coral);text-decoration-thickness:3px;color:var(--ink)}
+.toggle{margin-top:2.2vh;display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:clamp(12px,1vw,16px);background:var(--ink);color:#fff;border-radius:100px;padding:12px 22px;transition:transform .2s,background .2s}
+.toggle:hover{transform:translateY(-2px);background:var(--cobalt)}
+
+/* ---------- 6 skeleton ---------- */
+.skeleton{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6vh 1.1vw}
+.bone{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.8vh 1vw;position:relative;transition:border-color .4s,box-shadow .4s}
+.bone.on{border-color:rgba(45,75,255,.4);box-shadow:0 12px 30px -20px rgba(45,75,255,.6)}
+.bone .num{font-family:var(--display);font-weight:800;font-size:clamp(10px,.85vw,13px);color:var(--cobalt)}
+.bone h3{margin:.8vh 0 .6vh}
+.bone p{font-size:clamp(11px,.92vw,15px);color:var(--mute);line-height:1.3}
+.bone.new{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.bone.new .num,.bone.new p{color:#dfe4ff}
+.bone.new::after{content:"2026";position:absolute;top:10px;right:10px;font-family:var(--display);font-size:10px;font-weight:800;background:var(--hi);color:var(--ink);padding:3px 7px;border-radius:5px}
+.meter{margin-top:3vh;display:flex;align-items:center;gap:1.2vw;font-family:var(--display);font-weight:600;font-size:clamp(11px,1vw,16px)}
+.meter .bar{flex:1;height:10px;border-radius:10px;background:#e7e3d8;overflow:hidden;max-width:34vw}
+.meter .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),#7b8cff);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+
+/* ---------- so what ---------- */
+.chain{display:flex;flex-direction:column;gap:1.1vh;max-width:60vw}
+.link{display:flex;align-items:center;gap:1.2vw;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.5vh 1.2vw}
+.link:nth-child(2){margin-left:2.5vw}.link:nth-child(3){margin-left:5vw}.link:nth-child(4){margin-left:7.5vw}
+.link .lv{flex:none;width:clamp(26px,2vw,34px);height:clamp(26px,2vw,34px);border-radius:50%;display:grid;place-items:center;background:#ece8de;font-family:var(--display);font-weight:800;font-size:clamp(11px,.9vw,14px)}
+.link p{flex:1;min-width:0;font-size:clamp(13px,1.2vw,20px);font-weight:600;line-height:1.25}
+.link .sw{flex:none;font-family:var(--display);font-weight:700;font-size:clamp(10px,.85vw,13px);background:var(--coral);color:#fff;border-radius:100px;padding:6px 12px;white-space:nowrap}
+.link.win{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.link.win .lv{background:var(--hi);color:var(--ink)}
+.link .sw.ok{background:var(--hi);color:var(--ink)}
+.note{margin-top:2.6vh;font-size:clamp(13px,1.15vw,19px)!important;font-weight:600}
+/* ---------- template ---------- */
+.tpl{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:2.2vh 1.8vw;box-shadow:0 16px 40px -26px rgba(20,19,24,.4);position:relative}
+.tpl ol{list-style:none;counter-reset:n;display:flex;flex-direction:column;gap:.75vh}
+.tpl li{counter-increment:n;font-size:clamp(12px,1.06vw,17px);line-height:1.5;padding-left:2.2em;position:relative}
+.tpl li::before{content:counter(n);position:absolute;left:0;top:.15em;width:1.5em;height:1.5em;border-radius:6px;background:var(--ink);color:#fff;font-family:var(--display);font-size:.75em;font-weight:800;display:grid;place-items:center}
+.tpl i{font-style:normal;color:var(--cobalt);background:#eef1ff;border:1.5px dashed rgba(45,75,255,.5);border-radius:6px;padding:0 .35em;white-space:nowrap}
+.tpl .copy{position:absolute;right:1.2vw;top:-2.4vh;padding:9px 16px}
+.test77{margin-top:1.8vh;display:flex;gap:1.2vw;align-items:center;background:var(--hi);border-radius:16px;padding:1.5vh 1.4vw}
+.test77 .tm{flex:none;font-family:var(--display);font-weight:900;font-size:clamp(16px,1.6vw,28px);white-space:nowrap}
+.test77 p{font-size:clamp(12px,1.02vw,16px)!important;line-height:1.35}
+/* ---------- 7 three T ---------- */
+.tees{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2vw}
+.tee{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:3vh 1.5vw;position:relative;overflow:hidden;min-height:24vh}
+.tee .T{font-family:var(--display);font-weight:900;font-size:clamp(60px,7vw,120px);line-height:.7;height:.7em;overflow:hidden;display:block;color:var(--cobalt);opacity:.12;position:absolute;right:1vw;top:1.6vh}
+.tee .en{font-family:var(--display);font-size:clamp(10px,.8vw,12px);letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);font-weight:700}
+.tee h3{font-size:clamp(20px,2vw,34px);font-weight:900;margin:1vh 0}
+.tee p{font-size:clamp(12px,1.05vw,17px);color:#3c3a42;position:relative}
+.vsline{margin-top:3vh;display:flex;align-items:center;gap:1.6vw;background:var(--ink);color:#fff;border-radius:18px;padding:2.2vh 1.8vw}
+.vsline .w{font-family:var(--display);font-weight:900;font-size:clamp(16px,1.7vw,28px);white-space:nowrap}
+.vsline .w s{color:#8d8a95;text-decoration-color:var(--coral);text-decoration-thickness:3px}
+.vsline .w .gt{color:var(--hi);margin:0 .4em}
+.vsline p{font-size:clamp(12px,1.02vw,16px);color:#d8d5de}
+
+/* ---------- 8 flags ---------- */
+.flags{display:grid;grid-template-columns:repeat(3,1fr);gap:1vw}
+.flag{background:var(--card);border:1px solid rgba(255,91,58,.35);border-radius:16px;padding:2.2vh 1.2vw;text-align:left;cursor:pointer;transition:transform .25s,background .3s,border-color .3s;box-shadow:0 10px 26px -20px rgba(255,91,58,.6)}
+.flag:hover{transform:translateY(-3px)}
+.flag .t{font-family:var(--display);font-weight:700;font-size:clamp(13px,1.2vw,20px);line-height:1.2;display:flex;gap:10px;align-items:flex-start}
+.flag .t::before{content:"🚩";flex:none}
+.flag .fix{max-height:0;overflow:hidden;opacity:0;transition:max-height .5s,opacity .4s,margin .4s;font-size:clamp(12px,1vw,16px);line-height:1.35}
+.flag.open{background:#eef1ff;border-color:var(--cobalt)}
+.flag.open .t::before{content:"✅"}
+.flag.open .fix{max-height:200px;opacity:1;margin-top:1.2vh}
+.flag-hint{margin-top:1.8vh;font-size:clamp(11px,.9vw,14px);color:var(--mute)}
+.size{margin-top:3vh;display:flex;gap:1.2vw;flex-wrap:wrap}
+.size div{display:flex;align-items:baseline;gap:.7vw;background:var(--hi);border-radius:14px;padding:1.6vh 1.4vw}
+.size b{font-family:var(--display);font-weight:900;font-size:clamp(24px,2.6vw,44px);line-height:1}
+.size span{font-size:clamp(12px,1vw,16px);font-weight:600}
+
+/* ---------- 9 checklist ---------- */
+.final{display:grid;grid-template-columns:1.25fr .75fr;gap:3vw;align-items:center}
+.checklist{display:flex;flex-direction:column;gap:.9vh}
+.ck{display:flex;align-items:center;gap:1vw;padding:1.25vh 1vw;border-radius:12px;background:var(--card);border:1px solid var(--line);text-align:left;transition:background .25s,border-color .25s}
+.ck:hover{border-color:rgba(45,75,255,.5)}
+.ck .box2{flex:none;width:clamp(20px,1.6vw,26px);height:clamp(20px,1.6vw,26px);border-radius:7px;border:2px solid #b8b4aa;display:grid;place-items:center;transition:all .25s}
+.ck .box2 svg{opacity:0;transform:scale(.4);transition:all .25s}
+.ck span{font-size:clamp(12px,1.1vw,18px);font-weight:700}
+.ck.done{background:#eef1ff;border-color:rgba(45,75,255,.35)}
+.ck.done .box2{background:var(--cobalt);border-color:var(--cobalt)}
+.ck.done .box2 svg{opacity:1;transform:none}
+.ck.done span{color:var(--mute);text-decoration:line-through;text-decoration-color:var(--cobalt)}
+.ring{position:relative;width:min(22vw,44vh);aspect-ratio:1;margin:0 auto}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .pct{font-family:var(--display);font-weight:900;font-size:clamp(34px,4.6vw,80px);line-height:1}
+.ring .msg{font-family:var(--display);font-weight:600;font-size:clamp(10px,.9vw,14px);color:var(--mute);margin-top:.8vh;letter-spacing:.06em;text-transform:uppercase}
+.ring.full .pct,.ring.full .msg{color:var(--cobalt)}
+.ring.full{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.04)}}
+
+/* ---------- 10 closing ---------- */
+.closing h1{font-size:clamp(28px,3.9vw,70px);line-height:1.02}
+.takeaway{margin-top:3.4vh;display:flex;gap:1.6vw;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:2vh 1.6vw;max-width:46vw;box-shadow:0 16px 40px -26px rgba(20,19,24,.4)}
+.takeaway .qr{flex:none;width:min(9vw,17vh);height:min(9vw,17vh);border-radius:10px;image-rendering:pixelated}
+.takeaway .tk{font-family:var(--display);font-size:clamp(10px,.8vw,12px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--coral)}
+.takeaway h3{margin:.8vh 0 1.4vh;font-size:clamp(14px,1.3vw,22px)}
+.takeaway .toggle{margin-top:0;text-decoration:none;background:#ff0033}
+.takeaway .toggle:hover{background:var(--ink)}
+.closing h1 .line{display:block}
+.closing .tiny{margin-top:2.6vh;font-family:var(--display);font-weight:600;font-size:clamp(14px,1.4vw,24px)}
+
+/* ---------- subtitles (lower third) ---------- */
+.sub-bar{position:fixed;left:calc(var(--stage) + 0vw);right:2.4vw;bottom:2.8vh;z-index:10;display:flex;align-items:stretch;gap:12px;transition:opacity .4s,transform .4s}
+.sub-bar.hide .bubble,.sub-bar.silent .bubble{opacity:0;transform:translateY(14px);pointer-events:none}
+.sub-bar.silent .ctrls{opacity:.5}
+.stage.listening #head{animation:listen 6s ease-in-out infinite}
+@keyframes listen{0%,100%{transform:rotate(3deg)}45%{transform:rotate(5deg) translateY(1px)}60%{transform:rotate(4deg) translateY(-1px)}}
+.stage.listening .nameplate .live{background:var(--mute);animation:none}
+.nameplate .st{font-family:var(--display);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--hi)}
+.bubble{flex:1;position:relative;background:var(--ink);color:#fff;border-radius:20px;padding:1.7vh 1.6vw 1.7vh 1.6vw;min-height:11vh;display:flex;gap:1.2vw;align-items:center;box-shadow:0 20px 50px -20px rgba(20,19,24,.6);transition:opacity .4s,transform .4s}
+.bubble::before{content:"";position:absolute;left:-12px;bottom:32px;border:12px solid transparent;border-right-color:var(--ink);border-left:0}
+.who-tag{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.who-tag b{font-family:var(--display);font-weight:800;font-size:clamp(10px,.85vw,13px);letter-spacing:.14em;color:var(--hi)}
+.wave{display:flex;gap:3px;height:16px;align-items:center}
+.wave i{width:3px;height:4px;border-radius:2px;background:#fff;opacity:.5;transition:height .1s}
+.speaking .wave i{opacity:1}
+.line-txt{font-size:clamp(14px,1.28vw,21px);line-height:1.4;font-weight:500;min-height:1.4em}
+.line-txt .cur{display:inline-block;width:2px;height:1em;background:var(--hi);vertical-align:-2px;margin-left:2px;animation:blinkc .8s steps(2) infinite}
+@keyframes blinkc{50%{opacity:0}}
+.ctrls{display:flex;flex-direction:column;gap:6px;justify-content:center}
+.ctrls button{width:42px;height:42px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:17px;transition:all .2s;position:relative}
+.ctrls button:hover{border-color:var(--cobalt)}
+.ctrls button.on{background:var(--cobalt);color:#fff;border-color:var(--cobalt)}
+.ctrls button[data-tip]:hover::after{content:attr(data-tip);position:absolute;right:52px;top:50%;transform:translateY(-50%);background:var(--ink);color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;white-space:nowrap}
+
+/* ---------- chrome ---------- */
+.progress{position:fixed;left:0;top:0;height:4px;background:var(--cobalt);z-index:20;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.hud{position:fixed;right:2.4vw;top:2.6vh;z-index:20;display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:13px;color:var(--mute)}
+.hud .count b{color:var(--ink)}
+.hud button{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;transition:border-color .2s}
+.hud button:hover{border-color:var(--cobalt)}
+.timer{display:none;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:14px;color:var(--ink);margin-right:10px}
+.timer.show{display:flex}
+.timer .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:blinkc 1s infinite}
+.timer.paused .dot{animation:none;background:var(--mute)}
+.toast{position:fixed;top:8vh;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;z-index:50;opacity:0;pointer-events:none;transition:all .35s;max-width:80vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.hint{position:fixed;left:calc(var(--stage) + 2vw);top:2.8vh;z-index:20;font-size:12px;color:var(--mute);transition:opacity 1s}
+.hint kbd{font-family:var(--display);font-size:10px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:2px 6px;margin:0 2px;color:var(--ink)}
+.hint.gone{opacity:0}
+.overview{position:fixed;inset:0;z-index:40;background:rgba(245,242,234,.97);backdrop-filter:blur(10px);display:none;padding:8vh 7vw;overflow:auto}
+.overview.show{display:block}
+.overview h2{font-size:clamp(22px,2.2vw,36px)}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ov-grid button{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;min-height:96px;display:flex;flex-direction:column;gap:8px}
+.ov-grid button:hover,.ov-grid button.cur{border-color:var(--cobalt)}
+.ov-grid .i{font-family:var(--display);font-weight:800;color:var(--cobalt);font-size:12px}
+.ov-grid .t{font-family:var(--display);font-weight:600;font-size:15px;line-height:1.25}
+
+@media (max-width:900px){
+  :root{--stage:0vw}
+  .stage{width:38vw;opacity:.25;pointer-events:none}
+  .quad,.skeleton{grid-template-columns:repeat(2,1fr)}
+  .duo,.final,.tees{grid-template-columns:1fr}
+  .flags{grid-template-columns:1fr 1fr}
+  .slide{overflow:auto;justify-content:flex-start;padding:10vh 5vw 26vh}
+  .hero-cap,.ai-top p{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bg"><div class="dots"></div><div class="blob b1"></div><div class="blob b2"></div></div>
+<div class="progress" id="progress"></div>
+
+<!-- ================= SPEAKER ================= -->
+<div class="stage" id="stage">
+  <div class="spot"></div>
+  <svg id="char" viewBox="0 0 400 640" xmlns="http://www.w3.org/2000/svg" aria-label="Спікерка Марта">
+    <g id="body">
+      <!-- torso -->
+      <path d="M104 640 C104 478 118 402 152 374 Q200 354 248 374 C282 402 296 478 296 640 Z" fill="#2d4bff"/>
+      <path d="M176 368 L200 432 L224 368 Q200 360 176 368Z" fill="#ffffff"/>
+      <path d="M176 368 L200 432 L184 478 L156 384Z" fill="#1f37d6"/>
+      <path d="M224 368 L200 432 L216 478 L244 384Z" fill="#1f37d6"/>
+      <circle cx="228" cy="452" r="7" fill="#ffe24a"/>
+      <!-- neck -->
+      <path d="M182 300 L182 372 Q200 386 218 372 L218 300 Z" fill="#e6ad88"/>
+      <!-- left arm (holds clicker) -->
+      <g id="armL">
+        <path d="M138 392 C116 452 110 520 122 578" stroke="#2d4bff" stroke-width="38" stroke-linecap="round" fill="none"/>
+        <path d="M122 560 L122 578" stroke="#ffffff" stroke-width="38" stroke-linecap="butt" fill="none" opacity=".0"/>
+        <rect x="108" y="582" width="16" height="30" rx="5" fill="#141318"/>
+        <circle cx="122" cy="590" r="17" fill="#f3c9a8"/>
+        <circle cx="116" cy="586" r="2.5" fill="#ff5b3a"/>
+      </g>
+      <!-- right arm (gestures) -->
+      <g id="armR">
+        <path d="M262 392 C286 452 290 520 278 578" stroke="#2d4bff" stroke-width="38" stroke-linecap="round" fill="none"/>
+        <circle cx="278" cy="590" r="17" fill="#f3c9a8"/>
+        <path id="finger" d="M282 600 L288 626" stroke="#f3c9a8" stroke-width="9" stroke-linecap="round"/>
+      </g>
+      <!-- head -->
+      <g id="head">
+        <path d="M124 214 C116 128 168 104 204 106 C256 108 288 146 282 218 L286 302 Q252 322 226 304 L174 304 Q148 322 114 302 Z" fill="#2a1d1a"/>
+        <circle cx="136" cy="230" r="12" fill="#eab792"/>
+        <circle cx="264" cy="230" r="12" fill="#eab792"/>
+        <circle cx="134" cy="246" r="4.5" fill="#ffe24a"/>
+        <circle cx="266" cy="246" r="4.5" fill="#ffe24a"/>
+        <ellipse cx="200" cy="222" rx="64" ry="76" fill="#f3c9a8"/>
+        <path d="M134 210 C136 150 174 126 210 128 C252 130 274 160 268 204 C252 176 226 160 196 164 C170 168 150 188 134 210Z" fill="#2a1d1a"/>
+        <circle cx="166" cy="252" r="11" fill="#ff5b3a" opacity=".16"/>
+        <circle cx="234" cy="252" r="11" fill="#ff5b3a" opacity=".16"/>
+        <g id="brows">
+          <path d="M164 194 Q177 186 190 192" stroke="#2a1d1a" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M210 192 Q223 186 236 194" stroke="#2a1d1a" stroke-width="5" stroke-linecap="round" fill="none"/>
+        </g>
+        <g id="eyes">
+          <circle cx="178" cy="216" r="6.5" fill="#141318"/>
+          <circle cx="222" cy="216" r="6.5" fill="#141318"/>
+          <circle cx="180.5" cy="213.5" r="2" fill="#fff"/>
+          <circle cx="224.5" cy="213.5" r="2" fill="#fff"/>
+        </g>
+        <rect x="156" y="199" width="43" height="34" rx="13" stroke="#141318" stroke-width="3.2" fill="rgba(255,255,255,.18)"/>
+        <rect x="201" y="199" width="43" height="34" rx="13" stroke="#141318" stroke-width="3.2" fill="rgba(255,255,255,.18)"/>
+        <path d="M197 212 Q200 209 203 212" stroke="#141318" stroke-width="3" fill="none"/>
+        <path d="M200 226 Q194 242 201 246" stroke="#d99a77" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <g id="mouth">
+          <path id="mClosed" d="M184 266 Q200 278 216 266" stroke="#8a3b2e" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <ellipse id="mOpen" cx="200" cy="270" rx="13" ry="0" fill="#7a2a22"/>
+          <ellipse id="mTeeth" cx="200" cy="263" rx="9" ry="0" fill="#ffffff"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+  <div class="nameplate"><span class="live"></span><b>МАРТА</b><span>венчурна аналітикиня</span></div>
+</div>
+
+<main class="deck" id="deck">
+
+<!-- ============ 1 ============ -->
+<section class="slide title" data-title="Привіт" data-g="wave" data-say="Привіт, я Марта, венчурна аналітикиня. Розповідатиме Павло, а я іноді втручатимусь: пояснюватиму терміни і звідки взялися цифри.">
+  <div class="kicker">Executive Summary · спікер: Павло · коментує: Марта</div>
+  <h1><span>Резюме</span><span>бізнес-плану <span class="ver">версія 2026</span></span></h1>
+  <div class="sub f" data-g="open">як писати, коли вас читають <em>77 секунд</em>, а першим часто читає <em>штучний інтелект</em></div>
+  <div class="chips f" data-g="point">
+    <span class="chip"><i>●</i> Papermark · 2026</span>
+    <span class="chip"><i>●</i> Fast Company · 2026</span>
+    <span class="chip"><i>●</i> Sequel · 17 546 презентацій · 2025</span>
+    <span class="chip"><i>●</i> DocSend · 2026</span>
+    <span class="chip"><i>●</i> Sequoia Capital</span>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="slide" data-title="77 секунд" data-g="think">
+  <div class="kicker">Скільки у вас часу · 2026</div>
+  <div class="hero-num f" data-g="point" data-say="Звідки ця цифра. Papermark — сервіс, через який засновники надсилають презентації за посиланням. Він фіксує, скільки секунд інвестор провів на кожному слайді. Тут проаналізовано двісті двадцять дві тисячі таких переглядів. А медіана — це середина: половина переглядів коротша за 77 секунд, половина довша. Вона чесніша за середнє, яке завищують рідкісні довгі перегляди.">
+    <div class="watch">
+      <svg viewBox="0 0 200 200"><rect x="88" y="-14" width="24" height="14" rx="4" fill="#141318"/><circle cx="100" cy="100" r="96" fill="#fff"/><g stroke="#c9c4b8" stroke-width="2"><line x1="100" y1="10" x2="100" y2="24" transform="rotate(0 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(6 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(12 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(18 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(24 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(30 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(36 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(42 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(48 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(54 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(60 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(66 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(72 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(78 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(84 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(90 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(96 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(102 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(108 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(114 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(120 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(126 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(132 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(138 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(144 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(150 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(156 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(162 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(168 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(174 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(180 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(186 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(192 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(198 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(204 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(210 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(216 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(222 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(228 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(234 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(240 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(246 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(252 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(258 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(264 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(270 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(276 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(282 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(288 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(294 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(300 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(306 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(312 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(318 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(324 100 100)"/><line x1="100" y1="10" x2="100" y2="24" transform="rotate(330 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(336 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(342 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(348 100 100)"/><line x1="100" y1="10" x2="100" y2="18" transform="rotate(354 100 100)"/></g><circle class="wbg" cx="100" cy="100" r="70" fill="none" stroke="#ece8de" stroke-width="16"/><circle class="warc" cx="100" cy="100" r="70" fill="none" stroke="#2d4bff" stroke-width="16" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 100 100)"/></svg>
+      <div class="wc"><b data-count="77">0</b><span>секунд</span></div>
+    </div>
+    <div class="hero-side">
+      <p class="hero-lead">Стільки в середньому інвестор дивиться на презентацію стартапу</p>
+      <p class="gloss">Точніше, це <b>медіана</b>: половина переглядів коротша за 77 секунд, половина довша</p>
+      <div class="stats">
+        <div class="stat hot f"><b>16%</b><span>переглядів закінчуються менш ніж за 10 секунд</span></div>
+        <div class="stat f"><b>44%</b><span>інвесторів доходять до останнього слайда</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="punch f" data-g="open">Резюме не вступ. <span class="mark">Перші 77 секунд і є ваш бізнес-план.</span></div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="slide" data-title="Перший читач — AI" data-g="think">
+  <div class="kicker">Новий читач · жовтень 2026</div>
+  <h2>Ваш перший читач —<br><span class="cobalt">штучний інтелект</span></h2>
+  <div class="ai-top f" data-g="think" data-say="Важливий нюанс про метод. Це неформальне опитування венчурних інвесторів у LinkedIn, яке провела Леслі Фейнзайг, керівниця фонду Graham and Walker, і доповнила розмовами з учасниками. Вибірка не наукова, тож дивіться на це як на чіткий тренд, а не точну статистику.">
+    <div class="big"><span data-count="72">0</span>%</div>
+    <p>венчурних інвесторів переглядають презентації за допомогою AI</p>
+  </div>
+  <div class="f" data-g="point">
+    <div class="stackbar"><div class="s1" style="--w:39%">39% · спершу AI, потім людина</div><div class="s2" style="--w:29%">29% · людина, потім AI</div><div class="s3" style="--w:28%">28% · без AI</div></div>
+  </div>
+  <div class="duo">
+    <div class="box f" data-g="open">
+      <h3>🤖 Пишіть так, щоб зрозуміла машина</h3>
+      <ul><li>Чіткі, стандартні заголовки розділів</li><li>Цифри з одиницями: $, %, міс.</li><li>Одна думка на один абзац</li></ul>
+    </div>
+    <div class="box warn f" data-g="think">
+      <h3>⚠️ Але не пишіть, як машина</h3>
+      <ul><li>Шаблонний AI-текст тоне в «морі однаковості»</li><li>Форму може дати AI, думка має бути ваша</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="slide" data-title="Що є у профінансованих" data-g="open" data-say="Тут дослідження серйозніше. Sequel взяли сімнадцять з половиною тисяч презентацій, які стартапи надіслали на платформу PitchLeague, і перевірили, хто з них потім справді залучив гроші. Тобто порівнювали з реальними результатами, а не з думками інвесторів.">
+  <div class="kicker">Sequel · The Founder Files · 2025</div>
+  <h2>Що є у тих, хто <span class="cobalt">отримав гроші</span></h2>
+  <div class="dataset"><span>17 546 презентацій</span><span>121 країна</span><span>квітень 2023 – червень 2025</span></div>
+  <div class="quad">
+    <div class="qcard f pop" data-g="point" data-say="Поясню термін. Pre-seed — це найперший раунд інвестицій: є ідея, команда й іноді прототип. Далі йде seed, коли продукт уже працює, а потім серія A, коли бізнес масштабують. Тож навіть невелика виручка на найранішому етапі різко підвищує шанси."><b>×2,3</b><p>частіше отримують гроші на <span class="term">pre-seed</span>, якщо показали виручку</p></div>
+    <div class="qcard f pop" data-g="point"><b>×3,2</b><p>частіше, якщо назвали інвесторів, які вже вклалися<small>на seed ×2,3 · на серії A ×1,8</small></p></div>
+    <div class="qcard f pop" data-g="point"><b>+38%</b><p>вища оцінка дизайну презентацій у тих, хто отримав гроші</p></div>
+    <div class="qcard lol f pop" data-g="wow" data-excite="1"><b>37%</b><p>презентацій без email-адреси: інвестор зацікавився, а написати нікуди</p></div>
+  </div>
+  <div class="glossary f"><span><b>Pre-seed</b> — найперший раунд: ідея + команда</span><span><b>Seed</b> — продукт уже є</span><span><b>Серія A</b> — масштабування</span></div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="slide" data-title="Одне речення" data-g="open" data-say="Довідка: Sequoia Capital — один із найвідоміших венчурних фондів світу, інвестував в Apple, Google і Airbnb. Їхній короткий гайд з бізнес-плану став одним із найпоширеніших шаблонів для стартапів.">
+  <div class="kicker">Sequoia Capital · «Writing a Business Plan»</div>
+  <h2>Почніть з <span class="cobalt">одного</span> речення</h2>
+  <div class="formula f" data-g="point">Ми допомагаємо <i>кому</i> <i>що зробити</i> завдяки <i>чому</i>, на відміну від <i>як зараз</i>.</div>
+  <div class="f" data-g="think">
+    <div class="vs" id="vs">
+      <div class="face bad">
+        <div class="lab">✕ Так пишуть 90%</div>
+        <div class="txt">Ми — <span class="buzz">інноваційна платформа</span> на основі <span class="buzz">штучного інтелекту</span>, яка <span class="buzz">оптимізує бізнес-процеси</span> компаній <span class="buzz">у різних галузях</span>.</div>
+      </div>
+      <div class="face good">
+        <div class="lab">✓ Так дочитують</div>
+        <div class="txt">Ми допомагаємо <b>аптечним мережам</b> не викидати ліки, у яких закінчується термін придатності. Програма бачить, в якій аптеці ці ліки не купують, і <b>підказує передати їх в аптеку, де їх купують</b>. Зараз це відстежують вручну або не відстежують зовсім.</div>
+      </div>
+    </div>
+    <button class="toggle" id="vsBtn" type="button">⇄ Показати, як треба</button>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="slide" data-title="Скелет резюме" data-g="open">
+  <div class="kicker">Структура · 1–2 сторінки</div>
+  <h2>Скелет резюме-2026</h2>
+  <div class="skeleton" id="skeleton">
+    <div class="bone f" data-g="point"><span class="num">01</span><h3>Суть</h3><p>Одне речення: хто ви і для кого.</p></div>
+    <div class="bone new f" data-g="point" data-say="Що таке traction. Дослівно це «зчеплення», як у шин з дорогою. У стартапах так кажуть, коли продукт уже «зачепився» за ринок: ним користуються, за нього платять, і таких людей щомісяця більше. Не обіцянки, а факти. Papermark порахував, що презентації з тракцією в перших трьох слайдах отримують на двадцять відсотків більше переглядів."><span class="num">02</span><h3>Traction</h3><p>Докази, що продуктом уже користуються й платять. Покажіть одразу: +20% переглядів.</p></div>
+    <div class="bone f" data-g="point"><span class="num">03</span><h3>Проблема</h3><p>Чий біль і як його вирішують зараз.</p></div>
+    <div class="bone f" data-g="point"><span class="num">04</span><h3>Рішення</h3><p>Що ви пропонуєте і наскільки це краще, ніж зараз: «удвічі швидше», «на 30% дешевше».</p></div>
+    <div class="bone f" data-g="think" data-say="«Чому зараз» — улюблене питання венчурних фондів. Якщо ідея хороша, інвестор думає: чому її ніхто не зробив раніше? Сильна відповідь — щось нещодавно змінилося. Наприклад, люди звикли замовляти онлайн або з'явилася технологія, яка зробила рішення дешевим."><span class="num">05</span><h3>Чому зараз</h3><p>Що змінилося останнім часом (технологія, закон, звички людей), через що ідея спрацює саме тепер.</p></div>
+    <div class="bone f" data-g="point"><span class="num">06</span><h3>Ринок</h3><p>Скільки є таких клієнтів і скільки кожен готовий платити.</p></div>
+    <div class="bone f" data-g="point"><span class="num">07</span><h3>Команда</h3><p>Чому виграєте саме ви.</p></div>
+    <div class="bone f" data-g="point" data-say="Що інвестор хоче почути в запиті? Не лише скільки грошей вам потрібно, а як і коли він їх поверне. Для кредитора чи партнера це строк окупності: за скільки місяців проєкт поверне вкладене. Для венчурного інвестора — частка в компанії і план виходу, тобто продажу цієї частки дорожче через кілька років."><span class="num">08</span><h3>Запит і повернення</h3><p>Скільки грошей, на що, і коли та як інвестор поверне вкладення.</p></div>
+  </div>
+  <div class="meter"><span>Готовність резюме</span><div class="bar"><i id="skMeter"></i></div><span id="skPct">0%</span></div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="slide" data-title="Правило трьох T" data-g="think">
+  <div class="kicker">Як стати «читабельним» для інвестора</div>
+  <h2>Правило <span class="cobalt">трьох T</span></h2>
+  <div class="tees">
+    <div class="tee f" data-g="point"><span class="T">T</span><span class="en">ваш шлях</span><h3>Trajectory</h3><p>Що ви вже зробили раніше: досвід, результати, попередні проєкти.</p></div>
+    <div class="tee f" data-g="point"><span class="T">T</span><span class="en">довіра</span><h3>Trust</h3><p>Хто може за вас поручитися: рекомендації, партнери, поточні інвестори.</p></div>
+    <div class="tee f" data-g="point"><span class="T">T</span><span class="en">докази попиту</span><h3>Traction</h3><p>Продуктом уже користуються й платять, і таких людей стає більше.</p></div>
+  </div>
+  <div class="vsline f" data-g="think" data-say="Як це перевірили. Чень, Яо і Котха у двох дослідженнях — лабораторному експерименті та польовому, з реальними інвесторами, які оцінювали виступи засновників, — виміряли окремо пристрасть і підготовленість. На рішення стабільно впливала саме підготовленість.">
+    <div class="w"><s>🔥 Пристрасть</s><span class="gt">&lt;</span>🧠 Підготовленість</div>
+    <p>Хайп і перебільшення шкодять. На рішення інвесторів впливає продумана логіка й факти, а не показний ентузіазм.</p>
+  </div>
+</section>
+
+<!-- ============ 6a: SO WHAT ============ -->
+<section class="slide" data-title="Механіка «Ну і що?»" data-g="think">
+  <div class="kicker">Механіка №1 · тест «Ну і що?»</div>
+  <h2>Питайте «<span class="cobalt">Ну і що?</span>», поки не дійдете до вигоди</h2>
+  <div class="chain">
+    <div class="link f"><span class="lv">1</span><p>Програма аналізує продажі в кожній аптеці мережі</p><span class="sw">Ну і що?</span></div>
+    <div class="link f"><span class="lv">2</span><p>Вона заздалегідь бачить ліки, які в цій аптеці не встигнуть продати</p><span class="sw">Ну і що?</span></div>
+    <div class="link f"><span class="lv">3</span><p>Їх вчасно передають в аптеку, де їх купують</p><span class="sw">Ну і що?</span></div>
+    <div class="link win f" data-g="point" data-excite="1" data-say="Цей прийом давно використовують консультанти й копірайтери, він відомий як тест «So what?». Інвестор купує не технологію, а результат для клієнта. Тож у резюме має потрапити останній рядок, а не перший."><span class="lv">✓</span><p>Мережа менше викидає і більше заробляє</p><span class="sw ok">Це в резюме!</span></div>
+  </div>
+  <p class="note f">Технологія — це «як». Інвестор спершу хоче почути «навіщо» і «скільки». <span class="mute">Приклад умовний.</span></p>
+</section>
+
+<!-- ============ 6b: TEMPLATE ============ -->
+<section class="slide" data-title="Шаблон резюме" data-g="open">
+  <div class="kicker">Шаблон · заповніть пропуски</div>
+  <h2>Резюме за <span class="cobalt">8 речень</span></h2>
+  <div class="tpl f" id="tpl">
+    <ol>
+      <li><i>Назва</i> допомагає <i>кому</i> <i>що зробити</i> завдяки <i>чому</i>.</li>
+      <li>Уже зараз: <i>N клієнтів</i>, <i>$ продажів на місяць</i>, ріст <i>% за місяць</i>.</li>
+      <li>Проблема: <i>хто</i> втрачає <i>гроші / час</i>, бо зараз <i>як роблять</i>.</li>
+      <li>Ми пропонуємо <i>що</i>, і це <i>удвічі швидше / на 30% дешевше</i>, ніж <i>як зараз</i>.</li>
+      <li>Зараз вдалий момент, бо <i>що змінилося: технологія / закон / звички людей</i>.</li>
+      <li>Таких клієнтів <i>N</i>, кожен готовий платити <i>$ на рік</i>.</li>
+      <li>Команда: <i>хто ви</i> і <i>чому саме ви це зробите</i>.</li>
+      <li>Шукаємо <i>$ суму</i> на <i>що саме</i>; інвестор поверне вкладення за <i>N років</i> через <i>дивіденди / продаж частки / виплату позики</i>. Контакт: <i>email</i>.</li>
+    </ol>
+    <button class="toggle copy" id="copyTpl" type="button">📋 Скопіювати шаблон</button>
+  </div>
+  <div class="test77 f" data-g="point" data-say="І ще одна механіка — тест сімдесяти семи секунд. Дайте резюме людині не з вашої галузі, увімкніть таймер, а потім попросіть переказати, що ви робите і скільки грошей просите. Якщо переказати не вийшло, проблема не в читачеві."><span class="tm">⏱ 77 с</span><p><b>Механіка №2 · тест 77 секунд.</b> Дайте резюме людині не з вашої галузі на 77 секунд. Попросіть переказати: що ви робите і скільки просите. Не вийшло — переписуйте.</p></div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="slide" data-title="Червоні прапорці" data-g="think">
+  <div class="kicker">Що вбиває резюме з першого абзацу</div>
+  <h2>6 червоних прапорців</h2>
+  <div class="flags f" data-g="open">
+    <button class="flag" type="button"><div class="t">«У нас немає конкурентів»</div><div class="fix">Покажіть альтернативи, навіть непрямі (Excel теж конкурент), і чим ви кращі.</div></button>
+    <button class="flag" type="button"><div class="t">Ринок = «1% від мільярда людей»</div><div class="fix">Порахуйте, скільки клієнтів ви реально знайдете і скільки кожен заплатить.</div></button>
+    <button class="flag" type="button"><div class="t">Прогноз «хокейна ключка» без пояснень</div><div class="fix">Так називають графік, де продажі довго стоять, а потім різко злітають угору. Інвестори бачать його щодня. Прив'яжіть кожен стрибок до причини: новий канал продажів, нове місто, великий контракт.</div></button>
+    <button class="flag" type="button"><div class="t">Шаблонний AI-текст</div><div class="fix">Замініть загальні фрази своїми фактами, цифрами й прикладами.</div></button>
+    <button class="flag" type="button"><div class="t">Пів сторінки «історії компанії»</div><div class="fix">Суть і traction у першому абзаці, історія в додатку.</div></button>
+    <button class="flag" type="button"><div class="t">Запит без плану повернення</div><div class="fix">Сума, на що, і коли інвестор отримає гроші назад: «$300K на 18 міс. → окупність за 4 роки».</div></button>
+  </div>
+  <div class="flag-hint f">↑ Клікніть на прапорець, щоб побачити, як виправити</div>
+  <div class="size f" data-g="point">
+    <div><b>1–2</b><span>сторінки резюме</span></div>
+    <div><b>11–13</b><span>слайдів презентації (Sequel, 2025)</span></div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="slide" data-title="Чек-лист" data-g="open">
+  <div class="kicker">Перед тим як натиснути «Надіслати»</div>
+  <div class="final">
+    <div>
+      <h2 style="margin-bottom:2.4vh">Чек-лист резюме</h2>
+      <div class="checklist f" data-g="point">
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Суть умістилася в одне речення</span></button>
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Traction (клієнти, продажі) вже в першому абзаці</span></button>
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Кожна цифра має джерело</span></button>
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Три T: trajectory, trust, traction</span></button>
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Запит: сума → на що → коли інвестор поверне гроші</span></button>
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Є email і сайт</span></button>
+        <button class="ck" type="button"><span class="box2"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg></span><span>Не звучить як шаблон AI</span></button>
+      </div>
+    </div>
+    <div class="ring f pop" id="ring">
+      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" stroke="#e7e3d8" stroke-width="14" fill="none"/><circle id="ringArc" cx="100" cy="100" r="88" stroke="#2d4bff" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553" style="transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)"/></svg>
+      <div class="center"><div><div class="pct" id="ringPct">0%</div><div class="msg" id="ringMsg">0 з 7</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="slide closing" data-title="Фінал" data-g="think">
+  <div class="kicker">Головна думка</div>
+  <h1>
+    <span class="line f" data-g="open">Резюме не продає бізнес.</span>
+    <span class="line f cobalt" data-g="point" data-excite="1">Воно продає наступні<br>30 хвилин розмови.</span>
+  </h1>
+  <div class="takeaway f" data-g="point">
+    <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=https://youtu.be/ZOH7gITevOE%3Fsi%3DKOsAr_GQVxGMlwFH" alt="QR-код на відео" onerror="this.remove()">
+    <div>
+      <span class="tk">Забирайте з собою</span>
+      <h3>Що робити з бізнес-планом далі — відео від українського підприємця</h3>
+      <a class="toggle" href="https://youtu.be/ZOH7gITevOE?si=KOsAr_GQVxGMlwFH" target="_blank" rel="noopener">▶ Дивитися на YouTube ↗</a>
+    </div>
+  </div>
+  <p class="tiny f" data-g="wave" data-excite="1" data-say="Дякую, а зараз Павло відповість на всі ваші питання. Хто перший?">Дякую! Ваші запитання? 🙌</p>
+</section>
+
+</main>
+
+<!-- ================= SUBTITLES ================= -->
+<div class="sub-bar" id="subBar">
+  <div class="bubble" id="bubble">
+    <div class="who-tag"><b>МАРТА</b><div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="line-txt" id="lineTxt"></div>
+  </div>
+  <div class="ctrls">
+    <button id="bCC" type="button" class="on" data-tip="Субтитри (C)">CC</button>
+  </div>
+</div>
+
+<div class="hud">
+  <div class="timer" id="timer"><span class="dot"></span><span id="tval">00:00</span></div>
+  <span class="count"><b id="cur">1</b> / <span id="tot">1</span></span>
+  <button id="prevBtn" type="button" aria-label="Назад"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+  <button id="nextBtn" type="button" aria-label="Далі"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+</div>
+<div class="hint" id="hint"><kbd>→</kbd>/<kbd>пробіл</kbd> далі · <kbd>R</kbd> повторити · <kbd>C</kbd> субтитри · <kbd>T</kbd> таймер · <kbd>O</kbd> огляд · <kbd>F</kbd> повний екран</div>
+<div class="toast" id="toast"></div>
+<div class="overview" id="overview"><h2 style="margin-bottom:3vh">Огляд слайдів</h2><div class="ov-grid" id="ovGrid"></div></div>
+
+<script>
+(function(){
+  /* ============ CONFIG: змініть ім'я спікера тут ============ */
+  const SPEAKER = {name:'МАРТА', role:'венчурна аналітикиня'};
+  const CPS = 17;            // символів на секунду для субтитрів без голосу
+  /* ========================================================= */
+  document.querySelectorAll('.nameplate b, .who-tag b').forEach(e=>e.textContent=SPEAKER.name);
+  document.querySelector('.nameplate span:last-child').textContent=SPEAKER.role;
+
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  const frags=slides.map(s=>[...s.querySelectorAll('.f')]);
+  const step=slides.map(()=>0);
+  let idx=0;
+  document.getElementById('tot').textContent=total;
+
+  const stage=document.getElementById('stage');
+  const charEl=document.getElementById('char');
+  const mOpen=document.getElementById('mOpen'), mTeeth=document.getElementById('mTeeth'), mClosed=document.getElementById('mClosed');
+  const lineTxt=document.getElementById('lineTxt'), subBar=document.getElementById('subBar'), bubble=document.getElementById('bubble');
+  const waveBars=[...document.querySelectorAll('#wave i')];
+
+  /* ---------- toast ---------- */
+  let toastT;
+  function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3200);}
+
+  /* ---------- blinking ---------- */
+  const eyes=document.getElementById('eyes');
+  (function blink(){setTimeout(()=>{eyes.classList.add('blink');setTimeout(()=>eyes.classList.remove('blink'),130);blink();},2400+Math.random()*3200);})();
+
+  /* ---------- gestures ---------- */
+  const G=['g-point','g-wave','g-open','g-think','g-wow'];
+  let gT;
+  function gesture(g,excite){
+    G.forEach(c=>stage.classList.remove(c));
+    if(g) stage.classList.add('g-'+g);
+    stage.classList.toggle('excited',!!excite);
+    clearTimeout(gT);
+    gT=setTimeout(()=>{stage.classList.remove('g-wave','g-wow','excited');},g==='wave'?3200:2600);
+  }
+
+  /* ---------- subtitle engine (без озвучення) ---------- */
+  let ccOn=true, speaking=false;
+
+  let mouthI=null, typeI=null, doneT=null, token=0, lastLine='';
+  function mouthStart(){
+    clearInterval(mouthI);
+    charEl.classList.add('talking');stage.classList.add('talking');document.getElementById('subBar').classList.add('speaking');
+    mouthI=setInterval(()=>{
+      const o=Math.random();
+      const ry=o<.18?0:3+o*9;
+      mOpen.setAttribute('ry',ry.toFixed(1));
+      mTeeth.setAttribute('ry',ry>4?2.4:0);
+      mClosed.style.opacity=ry<1?1:0;
+      waveBars.forEach(b=>b.style.height=(4+Math.random()*12)+'px');
+    },95);
+  }
+  function mouthStop(){
+    clearInterval(mouthI);mOpen.setAttribute('ry',0);mTeeth.setAttribute('ry',0);mClosed.style.opacity=1;
+    stage.classList.remove('talking');document.getElementById('subBar').classList.remove('speaking');
+    waveBars.forEach(b=>b.style.height='4px');
+  }
+  function stopSpeech(){
+    token++;clearInterval(typeI);clearTimeout(doneT);
+    speaking=false;mouthStop();
+  }
+  function silent(){
+    stopSpeech();
+    subBar.classList.add('silent');
+    stage.classList.add('listening');
+    G.forEach(c=>stage.classList.remove(c));stage.classList.remove('excited');
+  }
+  function say(text){
+    stopSpeech();
+    if(!text){return silent();}
+    subBar.classList.remove('silent');stage.classList.remove('listening');
+    lastLine=text;
+    const my=++token; speaking=true;
+    const est=Math.max(1400,text.length/CPS*1000);
+    // typewriter
+    let i=0; const per=est/text.length;
+    lineTxt.innerHTML='<span class="cur"></span>';
+    const t0=performance.now();
+    typeI=setInterval(()=>{
+      i=Math.min(text.length,Math.floor((performance.now()-t0)/per));
+      lineTxt.innerHTML=escapeHtml(text.slice(0,i))+(i<text.length?'<span class="cur"></span>':'');
+      if(i>=text.length) clearInterval(typeI);
+    },30);
+    mouthStart();
+    doneT=setTimeout(()=>finished(my),est+250);
+  }
+  function finished(my){
+    if(my!==token) return;
+    speaking=false;mouthStop();stage.classList.add('listening');
+  }
+  function escapeHtml(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+  /* ---------- count-ups ---------- */
+  function countUp(el){
+    if(el.dataset.done) return; el.dataset.done=1;
+    const target=+el.dataset.count, dur=1500, t0=performance.now();
+    (function tick(t){const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,4);el.textContent=Math.round(target*e);if(p<1)requestAnimationFrame(tick);})(t0);
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    slides.forEach((s,i)=>{s.classList.toggle('active',i===idx);s.classList.toggle('past',i<idx);});
+    frags[idx].forEach((f,i)=>f.classList.toggle('on',i<step[idx]));
+    slides[idx].querySelectorAll('[data-count]').forEach(el=>{const fr=el.closest('.f');if(!fr||fr.classList.contains('on'))countUp(el);});
+    document.getElementById('cur').textContent=idx+1;
+    const fs=frags.reduce((a,f)=>a+f.length+1,0);
+    let done=0;for(let i=0;i<idx;i++)done+=frags[i].length+1;done+=step[idx]+1;
+    document.getElementById('progress').style.width=(done/fs*100)+'%';
+    document.querySelector('.b1').style.transform=`translate(${-idx*2.5}vw,${idx*2}vh)`;
+    document.querySelector('.b2').style.transform=`translate(${idx*2}vw,${-idx*1.5}vh)`;
+    skeletonMeter();
+    history.replaceState(null,'','#'+(idx+1));
+  }
+  function speakFor(el){
+    if(!el.dataset.say){silent();return;}
+    gesture(el.dataset.g,el.dataset.excite);
+    say(el.dataset.say);
+  }
+  function next(){
+    if(step[idx]<frags[idx].length){
+      const el=frags[idx][step[idx]]; step[idx]++; render(); speakFor(el); return;
+    }
+    if(idx<total-1){idx++;step[idx]=0;render();speakFor(slides[idx]);return;}
+  }
+  function prev(){
+    silent();
+    if(step[idx]>0){step[idx]--;render();return;}
+    if(idx>0){idx--;step[idx]=frags[idx].length;render();}
+  }
+  function go(i){idx=Math.max(0,Math.min(total-1,i));step[idx]=0;render();speakFor(slides[idx]);}
+
+  /* ---------- skeleton meter ---------- */
+  function skeletonMeter(){
+    const bones=[...document.querySelectorAll('#skeleton .bone')];
+    const p=Math.round(bones.filter(b=>b.classList.contains('on')).length/bones.length*100);
+    document.getElementById('skMeter').style.width=p+'%';document.getElementById('skPct').textContent=p+'%';
+  }
+
+  /* ---------- interactive bits ---------- */
+  const vs=document.getElementById('vs'),vsBtn=document.getElementById('vsBtn');
+  vsBtn.addEventListener('click',e=>{
+    e.stopPropagation();vs.classList.toggle('flip');
+    const good=vs.classList.contains('flip');
+    vsBtn.textContent=good?'⇄ Показати, як не треба':'⇄ Показати, як треба';
+    if(good){gesture('point',1);}
+  });
+  document.querySelectorAll('.flag').forEach(f=>f.addEventListener('click',e=>{e.stopPropagation();f.classList.toggle('open');if(f.classList.contains('open')){gesture('point');}}));
+  const cks=[...document.querySelectorAll('.ck')],arc=document.getElementById('ringArc'),ring=document.getElementById('ring');
+  let wasFull=false;
+  function updRing(){
+    const n=cks.filter(c=>c.classList.contains('done')).length,p=n/cks.length;
+    arc.style.strokeDashoffset=553*(1-p);
+    document.getElementById('ringPct').textContent=Math.round(p*100)+'%';
+    ring.classList.toggle('full',p===1);
+    document.getElementById('ringMsg').textContent=p===1?'🚀 надсилайте':(n+' з '+cks.length);
+    if(p===1&&!wasFull){gesture('wave',1);}
+    wasFull=p===1;
+  }
+  cks.forEach(c=>c.addEventListener('click',e=>{e.stopPropagation();c.classList.toggle('done');updRing();}));
+
+
+  const copyBtn=document.getElementById('copyTpl');
+  copyBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const txt=[...document.querySelectorAll('#tpl li')].map((li,i)=>(i+1)+'. '+li.textContent.replace(/\s+/g,' ').trim()).join('\n');
+    const done=()=>{copyBtn.textContent='✓ Скопійовано';setTimeout(()=>copyBtn.textContent='📋 Скопіювати шаблон',2000);};
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(done,fallback);}else fallback();
+    function fallback(){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(_){toast('Не вдалося скопіювати');}t.remove();}
+  });
+  /* ---------- controls ---------- */
+  const bCC=document.getElementById('bCC');
+  function setCC(v){ccOn=v;bCC.classList.toggle('on',v);subBar.classList.toggle('hide',!v);}
+  bCC.addEventListener('click',e=>{e.stopPropagation();setCC(!ccOn);});
+
+  /* ---------- timer ---------- */
+  const timer=document.getElementById('timer');let tStart=null,tAcc=0,tRun=false;
+  function fmt(ms){const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+  setInterval(()=>{if(!timer.classList.contains('show'))return;const ms=tAcc+(tRun?Date.now()-tStart:0);const v=document.getElementById('tval');v.textContent=fmt(ms);v.style.color=ms>8*60000?'var(--coral)':'';},250);
+  function toggleTimer(){
+    if(!timer.classList.contains('show')){timer.classList.add('show');tStart=Date.now();tRun=true;return;}
+    if(tRun){tAcc+=Date.now()-tStart;tRun=false;timer.classList.add('paused');}else{tStart=Date.now();tRun=true;timer.classList.remove('paused');}
+  }
+
+  /* ---------- overview ---------- */
+  const ov=document.getElementById('overview'),ovGrid=document.getElementById('ovGrid');
+  slides.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<span class="i">${String(i+1).padStart(2,'0')}</span><span class="t">${s.dataset.title}</span>`;b.addEventListener('click',e=>{e.stopPropagation();ov.classList.remove('show');go(i);});ovGrid.appendChild(b);});
+  function toggleOv(){ov.classList.toggle('show');[...ovGrid.children].forEach((b,i)=>b.classList.toggle('cur',i===idx));}
+
+  /* ---------- input ---------- */
+  const K=(k,set)=>set.includes(k);
+  document.addEventListener('keydown',e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    const k=e.key;
+    if(ov.classList.contains('show')&&!K(k,'oOщЩ')&&k!=='Escape') return;
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k)){e.preventDefault();next();}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();prev();}
+    else if(k==='Home'){go(0);}
+    else if(k==='End'){go(total-1);}
+    else if(K(k,'cCсС')) setCC(!ccOn);
+    else if(K(k,'rRкК')){if(lastLine)say(lastLine);}
+    else if(K(k,'tTеЕ')) toggleTimer();
+    else if(K(k,'oOщЩ')) toggleOv();
+    else if(k==='Escape'){ov.classList.remove('show');}
+    else if(K(k,'fFаА')){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen&&document.exitFullscreen();}
+    hideHint();
+  });
+  document.getElementById('nextBtn').addEventListener('click',e=>{e.stopPropagation();next();});
+  document.getElementById('prevBtn').addEventListener('click',e=>{e.stopPropagation();prev();});
+  document.getElementById('deck').addEventListener('click',e=>{if(e.target.closest('button,a'))return;next();hideHint();});
+  stage.addEventListener('click',()=>{gesture('wave',1);});
+  let tx=null;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)(dx<0?next:prev)();tx=null;});
+  let hintT=setTimeout(hideHint,12000);
+  function hideHint(){document.getElementById('hint').classList.add('gone');clearTimeout(hintT);}
+
+  /* ---------- start ---------- */
+  const h=parseInt(location.hash.slice(1),10);
+  if(h>1&&h<=total) idx=h-1;
+  render();
+  setTimeout(()=>speakFor(slides[idx]),600);
+})();
+</script>
+</body>
+</html>
